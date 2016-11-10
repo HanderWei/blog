@@ -89,6 +89,7 @@ Android系统将这些危险权限分组，获取分组中某个权限的同时�
 看权限名就知道*特殊权限*比*危险权限更*危险，所以需要在manifest中申请**并且**通过发送Intent让用户在设置界面进行勾选.
 
     * SYSTEM_ALERT_WINDOW
+    
     {% codeblock lang:java %}
     private static final int REQUEST_CODE = 1;
     private  void requestAlertWindowPermission() {
@@ -109,6 +110,7 @@ Android系统将这些危险权限分组，获取分组中某个权限的同时�
     {% endcodeblock}
 
     * WRITE_SETTINGS
+    
     {% codeblock lang:java %}
     private static final int REQUEST_CODE_WRITE_SETTINGS = 2;
     private void requestWriteSettings() {
@@ -126,3 +128,4 @@ Android系统将这些危险权限分组，获取分组中某个权限的同时�
         }
     }
     {% endcodeblock}
+
