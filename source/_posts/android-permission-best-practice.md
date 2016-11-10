@@ -11,12 +11,21 @@ tags:
 
 > 万物基于MIUI.
 
+<!-- toc -->
+
 ## 前言
 
-## 系统权限
+Google在Android 6.0 上开始原生支持应用权限管理，再不是安装应用时的一刀切。权限管理虽然很大程度上增加了用户的可操作性，但是却苦了广大Android开发者。由于权限管理涉及到应用的各个方面，为了避免背锅，很多大厂App的`targetSdkVersion`仍然停留在22。现在Android 7.0 已经发布，及早的解决该问题才能避免问题越滚越大。:neutral_face::neutral_face::neutral_face:
 
-### 权限分类
-1. 普通权限(Normal Permissions)
+## 权限分类
+
+Google将Android的权限分为三大类：
+
+* 普通权限(Normal Permissions)
+* 危险权限(Dangerous Permissions)
+* 特殊权限(Special Permissions)
+
+### 普通权限(Normal Permissions)
 
 | Normal Permissions |
 | ------ |
@@ -57,7 +66,7 @@ tags:
 
 普通权限不会对用户的隐私和安全产生太大的风险，所以只需要在**AndroidManifest.xml**中声明即可.
 
-2. 危险权限(Dangerous Permissions)
+### 危险权限(Dangerous Permissions)
 
 | Permission Group | Permissions |
 | --- | --- |
@@ -73,13 +82,15 @@ tags:
 
 危险权限基本都涉及到用户的隐私，诸如拍照、读取短信、写存储、录音等。(注：涉及隐私的就是危险权限)
 
-Android系统将这些危险权限分组，获取分组中某个权限的同时也就获取了同组中的其他权限。例如，在应用中申请`READ_EXTERNAL_STORAGE`权限，用户同意授权后，则应用同时具有`READ_EXTERNAL_STORAGE` 和 `WRITE_EXTERNAL_STORAGE` 权限
+Android系统将这些危险权限分组，获取分组中某个权限的同时也就获取了同组中的其他权限。例如，在应用中申请`READ_EXTERNAL_STORAGE`权限，用户同意授权后，则应用同时具有`READ_EXTERNAL_STORAGE` 和 `WRITE_EXTERNAL_STORAGE` 权限。
 
-下图为某信申请的权限(九组权限，申请了八组，除了日历...):
+危险权限不仅需要在**AndroidManifest.xml**中注册，还需要动态的申请权限。
+
+下图为某信申请的权限(九组权限，申请了八组，除了日历...:fearful::fearful::fearful:)
 
 <img src="http://7xs83t.com1.z0.glb.clouddn.com/%E5%BE%AE%E4%BF%A1%E6%9D%83%E9%99%90.png" width="540" height="960" />
 
-3. 特殊权限(Special Permissions)
+### 特殊权限(Special Permissions)
 
 | Special Permissions |
 | --- |
@@ -88,8 +99,8 @@ Android系统将这些危险权限分组，获取分组中某个权限的同时�
 
 看权限名就知道*特殊权限*比*危险权限更*危险，所以需要在manifest中申请**并且**通过发送Intent让用户在设置界面进行勾选.
 
-    1. SYSTEM_ALERT_WINDOW
-    
+#### 申请SYSTEM_ALERT_WINDOW权限
+
 {% codeblock lang:java %}
 private static final int REQUEST_CODE = 1;
 private  void requestAlertWindowPermission() {
@@ -107,9 +118,9 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         }
     }
 }
-{% endcodeblock}
+{% endcodeblock %}
 
-    2. WRITE_SETTINGS
+#### 申请WRITE_SETTINGS权限
     
 {% codeblock lang:java %}
 private static final int REQUEST_CODE_WRITE_SETTINGS = 2;
@@ -118,6 +129,7 @@ private void requestWriteSettings() {
     intent.setData(Uri.parse("package:" + getPackageName()));
     startActivityForResult(intent, REQUEST_CODE_WRITE_SETTINGS );
 }
+
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
@@ -127,5 +139,54 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         }
     }
 }
-{% endcodeblock}
+{% endcodeblock %}
+
+## 何时需要动态申请权限？
+
+> 1. 危险权限
+> 2. Android 版本 >= 6.0
+> 3. targetSdkVersion >= 23
+
+三个条件缺一不可。
+
+如果项目的`targetSdkVersion < 23`, 在Android 6.0＋的机子上，会默认给予所有在AndroidManifest.xml中申请的权限。
+
+是不是觉得这样就完事大吉了？
+
+<img src="http://7xs83t.com1.z0.glb.clouddn.com/too-young.jpg">
+
+如果用户手动在应用的权限页面收回权限，必然会导致应用的Crash.:broken_heart:
+
+稳妥的处理当然是遵循Google的权限申请机制。
+
+## 权限申请的一般流程
+
+### API
+
+| API | 作用 |
+| --- | --- |
+| checkSelfPermission( ) | 判断权限是否具有某项权限 |
+| requestPermissions( ) | 申请权限 |
+| onRequestPermissionsResult( ) | 申请权限回调方法 |
+| shouldShowRequestPermissionRationale( ) | 是否要提示用户申请该权限的缘由 |
+
+### shouldShowRequestPermissionRationale()分析
+
+| 序号 | 用户是否授予权限 | shouldShowRationale( ) 返回 | 是否勾选“不再询问” |
+| :---: | :---: | :---: | :---: |
+| 1 | 否 | false| - |
+| 2 | 否 | true | 否 |
+| 3 | 否 | true | 否 |
+| ... | ... | ... |... |
+| i | 否 | true | 是 |
+| i + 1 | - | false | - |
+
+> shouldShowRequestPermissionRationale( )方法名太长，在表格中简写
+
+第i次用户勾选了“不再询问”，同时也没有给予应用权限，则第i + 1次应用将无法唤起请求权限的Dialog，只能引导用户进入设置界面，手动勾选所需权限。
+
+### 如果判断用户勾选了“不再询问”？
+
+
+
 
