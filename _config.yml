@@ -12,7 +12,7 @@ timezone:
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://chen-wei.me/
-root: /root/
+root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 
@@ -43,23 +43,23 @@ anchorjs: true                          # if you want to customize anchor. check
 #disqus_username: hexo-theme-huxblog
 
 # Duoshuo settings
-# duoshuo_username: kaijun
+duoshuo_username: Hander
 # Share component is depend on Comment so we can NOT use share only.
 duoshuo_share: true                     # set to false if you want to use Comment without Sharing
 
 
 # Analytics settings
 # Baidu Analytics
-ba_track_id: 4cc1f2d8f3067386cc5cdb626a202900
+ba_track_id: 4d16b84b56e4428648ad7f9820fa52c5
 # Google Analytics
-ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
-ga_domain: huangxuan.me
+ga_track_id: 'UA-75446551-1'            # Format: UA-xxxxxx-xx
+ga_domain: chen-wei.me
 
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "菜鸡程序猿，擅长写Bug"
-sidebar-avatar: /img/avatar.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: img/avatar.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 # Featured Tags
@@ -148,7 +148,7 @@ theme: huxblog
 deploy:
   type: git
   repo: https://github.com/HanderWei/HanderWei.github.io
-  branch: gh-pages
+  branch: master
   
 # http://imys.net/20150514/hexo-toc.html
 toc:
