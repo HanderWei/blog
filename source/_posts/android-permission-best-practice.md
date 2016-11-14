@@ -125,11 +125,15 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 如果项目的`targetSdkVersion < 23`, 在Android 6.0＋的手机上，会默认给予所有在AndroidManifest.xml中申请的权限。
 
-是不是觉得这样就完事大吉了？
+是不是觉得这样就万事大吉了？
 
 <img src="http://7xs83t.com1.z0.glb.clouddn.com/too-young.jpg">
 
 如果用户在应用的权限页面手动收回权限，将会导致应用Crash.:broken_heart:
+
+<img src="http://7xs83t.com1.z0.glb.clouddn.com/denied-permission.png" width="540" height="960"/>
+
+> 虽然系统再次提醒用户不要收回权限，但是点不点“仍然拒绝”还是看用户心情
 
 稳妥的处理当然是遵循Google的权限申请机制。
 
